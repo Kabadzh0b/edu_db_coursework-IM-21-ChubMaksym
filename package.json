@@ -2,6 +2,7 @@
   "name": "edu_db_labs",
   "version": "2.1.0",
   "main": "index.js",
+  "type": "module",
   "description": "Databases labs template",
   "repository": {
     "type": "git",
