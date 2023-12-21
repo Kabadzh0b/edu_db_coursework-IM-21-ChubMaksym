@@ -12,8 +12,12 @@ server.get('/permission', async (request, reply) => {
 // Отримання дозволу за id
 server.get('/permission/:id', async (request, reply) => {
     const { id } = request.params;
-    const permission = await db.permission.read(id);
-    reply.send(permission);
+    try {
+      const permission = await db.permission.read(id);
+      reply.send(permission);
+    } catch (error) {
+      reply.code(204).send();
+    }
 });
 
 // Створення нового дозволу
@@ -26,9 +30,13 @@ server.post('/permission', async (request, reply) => {
 // Отримання ролей, що мають цей дозвіл
 server.get('/permission_has_role/:roleID', async (request, reply) => {
     const { roleID } = request.params;
-    const roles = await db.permission_has_role.read(roleID);
-    reply.send(roles);
-});
+    try {
+      const roles = await db.permission_has_role.read(roleID);
+      reply.send(roles);
+    } catch (error) {
+      reply.code(204).send();
+    }
+  });
 
 // Видалення ролей, що мають цей дозвіл
 server.delete('/permission_has_role/:permissionID', async (request, reply) => {

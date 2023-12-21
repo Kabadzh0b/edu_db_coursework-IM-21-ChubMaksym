@@ -16,10 +16,14 @@ initializeDatabase();
 
 export default {
     permission_has_role: {
-        read: async (roleID) => {
-            const [rows] = await connection.execute('SELECT * FROM permission_has_role WHERE Permission_id = ?', [roleID]);
-            return rows;
+        read: async (id) => {
+            const [rows] = await connection.execute('SELECT * FROM permission WHERE id = ?', [id]);
+            if (rows.length === 0) {
+              throw new Error('No such permission');
+            }
+            return rows[0];
         },
+
         delete: async (permissionID) => {
             await connection.execute('DELETE FROM permission_has_role WHERE Permission_id = ?', [permissionID]);
         }
@@ -34,6 +38,9 @@ export default {
         // Читання дозволу за id
         read: async (id) => {
             const [rows] = await connection.execute('SELECT * FROM permission WHERE id = ?', [id]);
+            if (rows.length === 0) {
+                throw new Error('No such permission');
+            }
             return rows[0];
         },
         // Читання всіх дозволів
