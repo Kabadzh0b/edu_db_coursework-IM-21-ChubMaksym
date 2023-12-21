@@ -360,5 +360,178 @@ Insert into mydb.category (name, description, Post_id, Category_id) Values
 ```
 
 
-## RESTfull Сервіс для управління даними
-*У розробці...*
+## Головний файл index.js
+Цей файл включає в себе ініціалізацію сервера Fastify та визначення маршрутів для обробки HTTP-запитів.
+
+Імпорт модулів
+import fastify from "fastify"; - імпортуємо Fastify, щоб створити сервер.
+import db from "./db.js"; - імпортуємо модуль для роботи з базою даних.
+Ініціалізація сервера
+const server = fastify(); - ініціалізуємо сервер Fastify.
+Маршрути
+GET /permission: Отримує всі дозволи. Відповідає масивом дозволів.
+
+GET /permission/:id: Отримує дозвіл за його ID. Якщо дозволу з таким ID не існує, повертає відповідь з кодом 204 "No Content".
+
+POST /permission: Створює новий дозвіл з іменем, яке передається в тілі запиту. Відповідає об'єктом з ID нового дозволу.
+
+GET /permission_has_role/:roleID: Отримує всі ролі, які мають вказаний дозвіл. Якщо дозволу з таким ID не існує, повертає відповідь з кодом 204 "No Content".
+
+DELETE /permission_has_role/:permissionID: Видаляє всі ролі, які мають вказаний дозвіл. Відповідає об'єктом { success: true }.
+
+PUT /permission/:id: Оновлює ім'я дозволу за його ID. Нове ім'я передається в тілі запиту. Відповідає об'єктом { success: true }.
+
+DELETE /permission/:id: Видаляє дозвіл за його ID. Відповідає об'єктом { success: true }.
+
+Запуск сервера
+server.listen(3000, (err, address) => {...}: Запускає сервер на порту 3000. Виводить в консоль адресу, на якій слухає сервер.
+import fastify from "fastify";
+import db from "./db.js";
+
+const server = fastify();
+
+// Отримання всіх дозволів
+server.get('/permission', async (request, reply) => {
+    const permissions = await db.permission.readAll();
+    reply.send(permissions);
+});
+
+// Отримання дозволу за id
+server.get('/permission/:id', async (request, reply) => {
+    const { id } = request.params;
+    try {
+      const permission = await db.permission.read(id);
+      reply.send(permission);
+    } catch (error) {
+      reply.code(204).send();
+    }
+});
+
+// Створення нового дозволу
+server.post('/permission', async (request, reply) => {
+    const { name } = request.body;
+    const id = await db.permission.create(name);
+    reply.send({ id });
+});
+
+// Отримання ролей, що мають цей дозвіл
+server.get('/permission_has_role/:roleID', async (request, reply) => {
+    const { roleID } = request.params;
+    try {
+      const roles = await db.permission_has_role.read(roleID);
+      reply.send(roles);
+    } catch (error) {
+      reply.code(204).send();
+    }
+  });
+
+// Видалення ролей, що мають цей дозвіл
+server.delete('/permission_has_role/:permissionID', async (request, reply) => {
+    const { permissionID } = request.params;
+    await db.permission_has_role.delete(permissionID);
+    reply.send({ success: true });
+});
+// Оновлення дозволу за id
+server.put('/permission/:id', async (request, reply) => {
+    const { id } = request.params;
+    const { name } = request.body;
+    await db.permission.update(id, name);
+    reply.send({ success: true });
+});
+  
+// Видалення дозволу за id
+server.delete('/permission/:id', async (request, reply) => {
+    const { id } = request.params;
+    await db.permission.delete(id);
+    reply.send({ success: true });
+});
+  
+// Запуск сервера
+server.listen(3000, (err, address) => {
+    if (err) throw err;
+    console.log(`Server listening on ${address}`);
+});
+
+## Документація до файлу db.js
+Цей файл включає в себе ініціалізацію з'єднання з базою даних MySQL та визначення функцій для роботи з таблицями permission та permission_has_role.
+
+Імпорт модулів
+import mysql from 'mysql2/promise'; - імпортуємо модуль mysql2/promise для роботи з MySQL в асинхронному режимі.
+Ініціалізація бази даних
+initializeDatabase(); - ініціалізує з'єднання з базою даних MySQL.
+Функції для роботи з таблицями
+permission_has_role.read(id): Отримує дозвіл за його ID. Якщо дозволу з таким ID не існує, викидає помилку.
+
+permission_has_role.delete(permissionID): Видаляє всі ролі, які мають вказаний дозвіл.
+
+permission.create(name): Створює новий дозвіл з іменем, яке передається як аргумент. Повертає ID нового дозволу.
+
+permission.read(id): Отримує дозвіл за його ID. Якщо дозволу з таким ID не існує, викидає помилку.
+
+permission.readAll(): Отримує всі дозволи. Повертає масив дозволів.
+
+permission.update(id, name): Оновлює ім'я дозволу за його ID. Нове ім'я передається як другий аргумент.
+
+permission.delete(id): Видаляє дозвіл за його ID.
+import mysql from 'mysql2/promise';
+
+let connection;
+// Ініціалізація бази даних
+async function initializeDatabase() {
+    // Створення з'єднання з базою даних
+  connection = await mysql.createConnection({
+    host: 'localhost',
+    user: 'Kabadzh0b',
+    password: 'Baskervili',
+    database: 'mydb'
+  });
+}
+
+initializeDatabase();
+
+export default {
+    permission_has_role: {
+        read: async (id) => {
+            const [rows] = await connection.execute('SELECT * FROM permission WHERE id = ?', [id]);
+            if (rows.length === 0) {
+              throw new Error('No such permission');
+            }
+            return rows[0];
+        },
+
+        delete: async (permissionID) => {
+            await connection.execute('DELETE FROM permission_has_role WHERE Permission_id = ?', [permissionID]);
+        }
+    },
+    permission: {
+        // Створення нового дозволу
+        create: async (name) => {
+            const [result] = await connection.execute('INSERT INTO permission (name) VALUES (?)', [name]);
+            return result.insertId;
+        },
+
+        // Читання дозволу за id
+        read: async (id) => {
+            const [rows] = await connection.execute('SELECT * FROM permission WHERE id = ?', [id]);
+            if (rows.length === 0) {
+                throw new Error('No such permission');
+            }
+            return rows[0];
+        },
+        // Читання всіх дозволів
+        readAll: async () => {
+            const [rows] = await connection.execute('SELECT * FROM permission');
+            return rows;
+        },
+
+        // Оновлення дозволу за id
+        update: async (id, name) => {
+            await connection.execute('UPDATE permission SET name = ? WHERE id = ?', [name, id]);
+        },
+
+        // Видалення дозволу за id
+        delete: async (id) => {
+            await connection.execute('DELETE FROM permission WHERE id = ?', [id]);
+        }
+    }
+};
