@@ -15,7 +15,7 @@ module.exports = {
     }]
   ],
   port: 3030,
-  base: '/edu_db_labs-IM-21/',
+  base: '/edu_db_coursework-IM-21-ChubMaksym/',
   theme: 'cool',
   // dest: 'dist',
   head: [
@@ -76,12 +76,12 @@ module.exports = {
 
     lastUpdated: false, // string | boolean
       // Assumes GitHub. Can also be a full GitLab url.
-    repo: 'https://github.com/Kabadzh0b/edu_db_coursework-IM-21-ChubMaksym',
+    repo: 'https://github.com/Kabadzh0b/edu_db_coursework-IM-21-ChubMaksym/tree/gh-pages',
     // Customising the header label
     // Defaults to "GitHub"/"GitLab"/"Bitbucket" depending on `themeConfig.repo`
     repoLabel: 'Github',
 
-    // Optional options for generating "Edit this page" link
+    // Optional options for generating "Edit this page" link    
 
     // if your docs are in a different repo from your main project:
     // docsRepo: 'boldak/dis-edu',

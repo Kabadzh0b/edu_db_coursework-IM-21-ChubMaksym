@@ -20,7 +20,7 @@ git commit -m 'deploy'
 # git push -f git@github.com:boldak/<USERNAME>.github.io.git master
 
 # # if you are deploying to https://<USERNAME>.github.io/<REPO>
-# git push -f git@github.com/Kabadzh0b/edu_db_coursework-IM-21-ChubMaksym
+# git push -f git@github.com/Kabadzh0b/edu_db_coursework-IM-21-ChubMaksym master:gh-pages
 
 # if someone uses http request
 git push -f https://github.com/Kabadzh0b/edu_db_coursework-IM-21-ChubMaksym master:gh-pages

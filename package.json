@@ -2,7 +2,6 @@
   "name": "edu_db_labs",
   "version": "2.1.0",
   "main": "index.js",
-  "type": "module",
   "description": "Databases labs template",
   "repository": {
     "type": "git",
@@ -13,7 +12,7 @@
   "scripts": {
     "docs:dev": "npx vuepress dev docs",
     "docs:build": "npx vuepress build docs",
-    "publish": "./publish.sh"
+    "publish": "publish.sh"
   },
   "dependencies": {
     "@vuepress/plugin-back-to-top": "^1.7.1",
